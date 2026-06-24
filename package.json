@@ -1,0 +1,15 @@
+{
+  "name": "rust-team-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bot Rust+ tu dong: chuyen leader qua team chat, bao AFK, vi tri dong doi chet, Patrol Helicopter va Bradley APC",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "pair:register": "npx @liamcottle/rustplus.js fcm-register",
+    "pair:listen": "npx @liamcottle/rustplus.js fcm-listen"
+  },
+  "dependencies": {
+    "@liamcottle/rustplus.js": "^2.5.0"
+  }
+}

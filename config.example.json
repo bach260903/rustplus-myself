@@ -1,0 +1,13 @@
+{
+  "server": {
+    "ip": "your-server-ip",
+    "port": "28017",
+    "playerId": "your-steamid64",
+    "playerToken": "your-player-token",
+    "useFacepunchProxy": false
+  },
+  "afkThresholdMinutes": 5,
+  "teamPollIntervalSeconds": 10,
+  "mapPollIntervalSeconds": 15,
+  "launchSiteCrateRadius": 80
+}
