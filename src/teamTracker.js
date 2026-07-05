@@ -8,17 +8,12 @@ function createTeamTracker({ sendAlert, worldSize, afkThresholdMs }) {
   function handleTeamInfo(teamInfo) {
     const now = Date.now();
     for (const m of teamInfo.members) {
-            console.log(
-        "[DEBUG MEMBER]",
-        m.name,
-        "alive=", m.isAlive,
-        "x=", m.x,
-        "y=", m.y
-      );
       const steamId = String(m.steamId);
       const prev = members.get(steamId);
 
       if (!prev) {
+        // First time we see this member -> just store state, don't alert
+        // (avoids spam when the bot just started).
         members.set(steamId, {
           name: m.name,
           x: m.x,
@@ -31,25 +26,22 @@ function createTeamTracker({ sendAlert, worldSize, afkThresholdMs }) {
         continue;
       }
 
-    if (prev.isAlive && !m.isAlive) {
-      console.log(
-        "[DEBUG DEATH]",
-        m.name,
-        "x=", m.x,
-        "y=", m.y,
-        "prevX=", prev.x,
-        "prevY=", prev.y,
-        "isAlive=", m.isAlive
-      );
+      // Teammate died. Use the death-reading position if it looks valid,
+      // otherwise fall back to the last known alive position.
+      if (prev.isAlive && !m.isAlive) {
+        const hasPos =
+          typeof m.x === "number" &&
+          typeof m.y === "number" &&
+          !(m.x === 0 && m.y === 0);
+        const dx = hasPos ? m.x : prev.x;
+        const dy = hasPos ? m.y : prev.y;
+        sendAlert(`[DEAD] ${m.name} died at ${toGridReference(dx, dy, worldSize)}`);
+      }
 
-      sendAlert(
-        `[CHET] ${m.name} da chet tai ${toGridReference(
-          typeof m.x === "number" ? m.x : prev.x,
-          typeof m.y === "number" ? m.y : prev.y,
-          worldSize
-        )}`
-      );
-    }
+      // Teammate just came online
+      if (!prev.isOnline && m.isOnline) {
+        sendAlert(`[ONLINE] ${m.name} just came online`);
+      }
 
       const moved = prev.x !== m.x || prev.y !== m.y;
       if (moved) {
@@ -71,7 +63,11 @@ function createTeamTracker({ sendAlert, worldSize, afkThresholdMs }) {
       if (!member.isOnline || !member.isAlive || member.isAfk) continue;
       if (now - member.lastMovedAt >= afkThresholdMs) {
         member.isAfk = true;
-        sendAlert(`[AFK] ${member.name} dang AFK (khong di chuyen qua ${Math.round(afkThresholdMs / 60000)} phut)`);
+        sendAlert(
+          `[AFK] ${member.name} is AFK (no movement for ${Math.round(
+            afkThresholdMs / 60000
+          )} min)`
+        );
       }
     }
   }

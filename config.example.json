@@ -9,5 +9,11 @@
   "afkThresholdMinutes": 5,
   "teamPollIntervalSeconds": 10,
   "mapPollIntervalSeconds": 15,
-  "launchSiteCrateRadius": 80
+  "timePollIntervalSeconds": 30,
+  "launchSiteCrateRadius": 80,
+  "autoSwitchServer": true,
+  "ntfy": {
+    "server": "https://ntfy.sh",
+    "topic": ""
+  }
 }
